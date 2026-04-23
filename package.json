@@ -1,0 +1,27 @@
+{
+  "name": "backendproject",
+  "version": "1.0.0",
+  "description": "Backend Practice Project",
+  "homepage": "https://github.com/ValtierraXavier/backendProject#readme",
+  "bugs": {
+    "url": "https://github.com/ValtierraXavier/backendProject/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ValtierraXavier/backendProject.git"
+  },
+  "license": "ISC",
+  "author": "Xavier Valtierra",
+  "type": "module",
+  "main": "./src/app.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
