@@ -26,12 +26,18 @@ app.get('/events/saved', async (req, res)=> {
 })
 
 app.use((req, res)=>{
-    res.status(404).json({ok: false, error: {code: '404', message: 'Route not found.'}})
+    res.status(404).json({
+        ok: false, 
+        error: {
+            code: 'INVALID_ROUTE',
+            message: 'Route not found.'
+        }
+    })
 })
 
 app.use((err, req, res, next)=>{
     console.error(err)
     res.status(500).json({ok: false, error: 'Internal server Error.'})
 })
-
+console.log(crypto.randomUUID())
 export default app

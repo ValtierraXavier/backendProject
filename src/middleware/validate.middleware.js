@@ -1,3 +1,7 @@
+import {createDedupeService} from "../services/dedupe.service.js"
+
+const dedupe = createDedupeService({ttlMs: 60000})
+
 export const validateEvent = (req, res, next) => {
     const event = req.body
      if(!event){
@@ -20,7 +24,7 @@ export const validateEvent = (req, res, next) => {
         return res.status(400).json({
             error: {
                 code: "INVALID_ID",
-                message: "Id must be non-empty string."
+                message: "Id must be a non-empty string."
             }
         })
     }
@@ -49,6 +53,15 @@ export const validateEvent = (req, res, next) => {
             error:{
                 code: "INVALID_PAYLOAD",
                 message: "Payload must be an object."
+            }
+        })
+    }
+    if(dedupe.isDuplpicate(event.id)){
+        return res.status(409).json({
+            ok: false,
+            error:{
+                code: "DUPLICATE_EVENT",
+                message: "This request is currently being processed or has expired."
             }
         })
     }
