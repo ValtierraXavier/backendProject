@@ -67,3 +67,30 @@ export const validateEvent = (req, res, next) => {
     }
     next()
 }
+
+//validates from/to as valid ISO-8601 date string. 
+export const validateQuery = (req, res, next) => {
+    const queries = req.query
+    const from = queries.from
+    const to = queries.to
+
+    if(from !== undefined || typeof from !== "string" || Number.isNaN(Date.parse(from))){
+        return res.status(400).json({
+            ok: false,
+            error:{
+                code: "INVALID_QUERY",
+                message: "Query \"from\" is not in a valid format."
+            }
+        })
+    }
+    if(to !== undefined || typeof to !== "string" || Number.isNaN(Date.parse(to))){
+        return res.status(400).json({
+            ok: false,
+            error:{
+                code: "INVALID_QUERY",
+                message: "Query \"to\" is not in a valid format."
+            }
+        })
+    }
+    next()
+}

@@ -1,6 +1,7 @@
 import express from 'express'
 import { readEvents, saveEvent } from './storage/memory.store.js'
-import {validateEvent} from './middleware/validate.middleware.js'
+import {validateEvent, validateQuery} from './middleware/validate.middleware.js'
+import { queryFilter } from './services/events.service.js';
 
 const app = express()
 
@@ -13,6 +14,11 @@ app.get('/',(req, res)=>{
 })
 app.get('/health',(req, res)=>{
     res.status(200).json({ok:true})
+})
+
+app.get("/events", validateQuery, async (req, res) => {
+    const queries = req.query
+    res.status(200).json(queryFilter(queries))
 })
 
 app.post('/events', validateEvent, async (req,res) => {
@@ -39,5 +45,4 @@ app.use((err, req, res, next)=>{
     console.error(err)
     res.status(500).json({ok: false, error: 'Internal server Error.'})
 })
-console.log(crypto.randomUUID())
 export default app
