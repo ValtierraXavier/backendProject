@@ -1,6 +1,6 @@
 import {createDedupeService} from "../services/dedupe.service.js"
 
-const dedupe = createDedupeService({ttlMs: 60000})
+export const dedupe = createDedupeService({ttlMs: 60000})
 
 export const validateEvent = (req, res, next) => {
     const event = req.body
@@ -50,6 +50,7 @@ export const validateEvent = (req, res, next) => {
         Array.isArray(event.payload)
     ){
         return res.status(400).json({
+            ok: false,
             error:{
                 code: "INVALID_PAYLOAD",
                 message: "Payload must be an object."
@@ -73,8 +74,10 @@ export const validateQuery = (req, res, next) => {
     const queries = req.query
     const from = queries.from
     const to = queries.to
+    const page = queries.page
+    const limit = queries.limit
 
-    if(from !== undefined || typeof from !== "string" || Number.isNaN(Date.parse(from))){
+    if(from !== undefined && Number.isNaN(Date.parse(from))){
         return res.status(400).json({
             ok: false,
             error:{
@@ -83,12 +86,30 @@ export const validateQuery = (req, res, next) => {
             }
         })
     }
-    if(to !== undefined || typeof to !== "string" || Number.isNaN(Date.parse(to))){
+    if(to !== undefined && Number.isNaN(Date.parse(to))){
         return res.status(400).json({
             ok: false,
             error:{
                 code: "INVALID_QUERY",
                 message: "Query \"to\" is not in a valid format."
+            }
+        })
+    }
+    if(page !== undefined && (Number.isNaN(Number(page)) || Number(page) < 1)){
+        return res.status(400).json({
+            ok: false,
+            error:{
+                code: "INVALID_QUERY",
+                message: "Query \"page\" is not in a valid format."
+            }
+        })
+    }
+    if(limit !== undefined && (Number.isNaN(Number(limit)) || Number(limit) < 1)){
+        return res.status(400).json({
+            ok: false,
+            error:{
+                code: "INVALID_QUERY",
+                message: "Query \"limit\" is not in a valid format."
             }
         })
     }

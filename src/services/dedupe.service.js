@@ -7,9 +7,11 @@ export const createDedupeService = ({ttlMs = 60000, now = Date.now} = {}) => {
         TTL.set(id,{createdAt: now(), expiresAt: now() + ttlMs})
         return false
     }
-    return {isDuplpicate}
+    const resetTTL = async () => {
+        TTL.clear()
+    }
+    return {isDuplpicate, resetTTL}
 }
-
 //i want to make an expiration window. 
 /*
 the event object will have a structure like: 

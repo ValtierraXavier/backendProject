@@ -1,7 +1,7 @@
 import express from 'express'
 import { readEvents, saveEvent } from './storage/memory.store.js'
 import {validateEvent, validateQuery} from './middleware/validate.middleware.js'
-import { queryFilter } from './services/events.service.js';
+import { queryFilter, paginationHelper } from './services/events.service.js';
 
 const app = express()
 
@@ -18,17 +18,25 @@ app.get('/health',(req, res)=>{
 
 app.get("/events", validateQuery, async (req, res) => {
     const queries = req.query
-    res.status(200).json(queryFilter(queries))
+    const filteredData = queryFilter(queries)
+    const  paginatedData = paginationHelper(queries, filteredData)
+        res.status(200).json({
+            ok: true,
+            data: paginatedData
+        })
 })
 
 app.post('/events', validateEvent, async (req,res) => {
     const response = req.body
-    const storedEvent = await saveEvent(response)
-    res.status(201).json(storedEvent)
+    const storedEvent = saveEvent(response)
+    res.status(201).json({
+        ok: true,
+        data: storedEvent
+    })
 })
 
 app.get('/events/saved', async (req, res)=> {
-    res.json(await readEvents())
+    res.json(readEvents())
 })
 
 app.use((req, res)=>{

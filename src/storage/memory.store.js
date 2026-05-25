@@ -1,9 +1,12 @@
 const events = []
-export const saveEvent = async (event) => {
+export const saveEvent = (event) => {
     events.push(event)
     return event
 }
-export const readEvents = async () => {
+export const readEvents = () => {
     return events
 }
 
+export const resetEvents = () => {
+    events.length = 0
+}
