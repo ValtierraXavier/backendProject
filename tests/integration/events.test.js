@@ -39,6 +39,7 @@ test('Test missing request body to respond with status 400.', async()=>{
         .set('Accept', 'aplication/json')
         .expect(400)
     expect(res.body).toEqual({
+        ok: false,
         error:{
             code:'INVALID_EVENT',
             message: "Request Body required."
@@ -53,9 +54,10 @@ test('Test request with empty json to respond with status 400.', async()=>{
         .set('Accept', "application/json")
         .expect(400)
     expect(res.body).toEqual({
+        ok: false,
             error: {
                 code: "INVALID_EVENT",
-                message: "JSON object is Empty."
+                message: "JSON object is empty."
             }
         })
 })
@@ -96,6 +98,7 @@ test('Test event validation INVALID_ID. respond with 400 status.', async ()=>{
         })
         .expect(400)
     expect(res.body).toEqual({
+        ok: false,
         error:{
             code:'INVALID_ID',
             message: "Id must be a non-empty string."
@@ -116,6 +119,7 @@ test("test with body object containing invalid type. reaponds with 400", async()
             })
         .expect(400)
     expect(res.body).toEqual({
+        ok: false,
             error: {
                     code: "INVALID_TYPE",
                     message: "Type must be a non-empty string."
@@ -136,6 +140,7 @@ test("Test /events with body object containing invalid timestamp.", async ()=>{
         })
         .expect(400)
     expect(res.body).toEqual({
+        ok: false,
         error: {
                 code: "INVALID_TIMESTAMP",
                 message: "Timestamp must be a valid ISO-8601 date string."
@@ -208,7 +213,7 @@ test('Dedupe service event with the same id within 60 seconds. should reject sec
 
 test("test fakeEvent dataset for type query filtering response.", async () => {
     resetEvents()
-    await dedupe.resetTTL()
+    dedupe.resetTTL()
     for(const event of fakeEvents){
         await request(app)
         .post("/events")
@@ -225,7 +230,7 @@ test("test fakeEvent dataset for type query filtering response.", async () => {
 
 test("Test /events with a from query. fitering seeded events from fakeEvents.", async () => {
     resetEvents()
-    await dedupe.resetTTL()
+    dedupe.resetTTL()
 
     for(const event of fakeEvents){
         await request(app)
@@ -244,7 +249,7 @@ test("Test /events with a from query. fitering seeded events from fakeEvents.", 
 
 test("Test /events with a to query. fitering seeded events from fakeEvents.", async () => { 
     resetEvents()
-    await dedupe.resetTTL()
+    dedupe.resetTTL()
     for(const event of fakeEvents){
         await request(app)
         .post("/events")
@@ -260,7 +265,7 @@ test("Test /events with a to query. fitering seeded events from fakeEvents.", as
 })
 test("combination queries. from and to.", async () => {
     resetEvents()
-    await dedupe.resetTTL()
+    dedupe.resetTTL()
 
     for(const event of fakeEvents){
         await request(app)
@@ -285,7 +290,7 @@ test("All query combinations.", async () => {
     const type = 'xml'
 
     resetEvents()
-    await dedupe.resetTTL()
+    dedupe.resetTTL()
 
 
     for (const event of fakeEvents){
@@ -309,7 +314,7 @@ test("All query combinations.", async () => {
 test("deterministic testing of pagination helper.", async () => {
     
     resetEvents()
-    await dedupe.resetTTL()
+    dedupe.resetTTL()
 
     for (const event of fakeEvents){
         await request(app)
@@ -341,13 +346,24 @@ test("deterministic testing of pagination helper.", async () => {
     const res6 = await request(app)
         .get("/events?page=4&limit=-3")
         .expect(400)
-    console.log(res6.body)
     expect(res6.body).toEqual(
         {
             ok: false,
             error:{
                 code: "INVALID_QUERY",
                 message: 'Query "limit" is not in a valid format.'
+            }
+        }
+    )
+    const res7 = await request(app)
+        .get("/events?page=-4&limit=3")
+        .expect(400)
+    expect(res7.body).toEqual(
+        {
+            ok: false,
+            error:{
+                code: "INVALID_QUERY",
+                message: 'Query "page" is not in a valid format.'
             }
         }
     )

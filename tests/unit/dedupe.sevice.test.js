@@ -1,5 +1,3 @@
-import app from "../../src/app.js"
-import request from 'supertest'
 import {test, expect} from 'vitest'
 import crypto from 'crypto'
 import {createDedupeService} from "../../src/services/dedupe.service.js"

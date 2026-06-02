@@ -7,7 +7,7 @@ export const createDedupeService = ({ttlMs = 60000, now = Date.now} = {}) => {
         TTL.set(id,{createdAt: now(), expiresAt: now() + ttlMs})
         return false
     }
-    const resetTTL = async () => {
+    const resetTTL = () => {
         TTL.clear()
     }
     return {isDuplpicate, resetTTL}

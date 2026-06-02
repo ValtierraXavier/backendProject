@@ -2,12 +2,17 @@ import express from 'express'
 import { readEvents, saveEvent } from './storage/memory.store.js'
 import {validateEvent, validateQuery} from './middleware/validate.middleware.js'
 import { queryFilter, paginationHelper } from './services/events.service.js';
+import { rateLimiter } from './middleware/ratelimit.middelware.js';
+import { reqLogger } from './middleware/logs.middleware.js';
 
 const app = express()
 
-app.use(express.json())
-
-app.use(express.urlencoded({extended: true}))
+app.use(
+    express.json(),
+    express.urlencoded({extended: true}),
+    reqLogger,
+    rateLimiter({limitWindow: process.env.NODE_ENV === "test"? 0: 60000})
+)
 
 app.get('/',(req, res)=>{
     res.send('Hello World')

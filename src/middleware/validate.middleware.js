@@ -2,69 +2,38 @@ import {createDedupeService} from "../services/dedupe.service.js"
 
 export const dedupe = createDedupeService({ttlMs: 60000})
 
+const sendValidationError = (req, res, status, code, message) => {
+    const err = {ok: false, error: {code, message}}
+    console.warn(code, {path: req.path, method: req.method, err})
+    return res.status(status).json(err)
+}
+
 export const validateEvent = (req, res, next) => {
     const event = req.body
      if(!event){
-       return res.status(400).json({
-            error: {
-                code: "INVALID_EVENT" ,
-                message: "Request Body required."
-            }
-        })
+        return sendValidationError(req, res, 400, "INVALID_EVENT", "Request Body required." )
     }
     if(Object.keys(event).length === 0){
-       return res.status(400).json({
-            error: {
-                code: "INVALID_EVENT",
-                message: "JSON object is Empty."
-            }
-        })
+        return sendValidationError(req, res, 400, "INVALID_EVENT", "JSON object is empty.")
     }
     if(typeof event.id !== "string" || event.id.trim() === ""){
-        return res.status(400).json({
-            error: {
-                code: "INVALID_ID",
-                message: "Id must be a non-empty string."
-            }
-        })
+        return sendValidationError(req, res, 400, "INVALID_ID", "Id must be a non-empty string.")
     }
     if(typeof event.type !== "string" || event.type.trim() === ""){
-        return res.status(400).json({
-            error: {
-                    code: "INVALID_TYPE",
-                    message: "Type must be a non-empty string."
-            }
-        })
+        return sendValidationError(req, res, 400, "INVALID_TYPE", "Type must be a non-empty string.")
     }
     if(typeof event.timestamp !== "string" || Number.isNaN(Date.parse(event.timestamp))){
-        return res.status(400).json({
-            error: {
-                code: "INVALID_TIMESTAMP",
-                message: "Timestamp must be a valid ISO-8601 date string."
-            }
-        })
+        return sendValidationError(req, res, 400, "INVALID_TIMESTAMP", "Timestamp must be a valid ISO-8601 date string.")
     }
     if(
         typeof event.payload !== "object" ||
         event.payload === null ||
         Array.isArray(event.payload)
     ){
-        return res.status(400).json({
-            ok: false,
-            error:{
-                code: "INVALID_PAYLOAD",
-                message: "Payload must be an object."
-            }
-        })
+        return sendValidationError(req, res, 400, "INVALID_PAYLOAD", "Payload must be an object.")
     }
     if(dedupe.isDuplpicate(event.id)){
-        return res.status(409).json({
-            ok: false,
-            error:{
-                code: "DUPLICATE_EVENT",
-                message: "This request is currently being processed or has expired."
-            }
-        })
+        return sendValidationError(req, res, 409, "DUPLICATE_EVENT", "This request is currently being processed or has expired.")
     }
     next()
 }
