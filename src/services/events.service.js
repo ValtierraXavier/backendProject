@@ -18,9 +18,9 @@ export const queryFilter = (query) => {
     return filteredEvents
 }
 
-export const paginationHelper = (query, items) => {
+export const paginationHelper = (query = {}, items = []) => {
     const page = query.page? Number(query.page): 1
-    const limit = query.limit? Number(query.limit): 20
+    const limit = query.limit? Number(query.limit): 10
     
     const orderEvents = (items) =>{
         return items.sort((a, b) => {

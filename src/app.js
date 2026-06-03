@@ -10,9 +10,11 @@ const app = express()
 app.use(
     express.json(),
     express.urlencoded({extended: true}),
-    reqLogger,
-    rateLimiter({limitWindow: process.env.NODE_ENV === "test"? 0: 60000})
+    reqLogger
 )
+if(process.env.NODE_ENV !== "test") {
+    app.use(rateLimiter())
+}
 
 app.get('/',(req, res)=>{
     res.send('Hello World')
@@ -24,10 +26,16 @@ app.get('/health',(req, res)=>{
 app.get("/events", validateQuery, async (req, res) => {
     const queries = req.query
     const filteredData = queryFilter(queries)
-    const  paginatedData = paginationHelper(queries, filteredData)
+    const paginatedData = paginationHelper(queries, filteredData)
         res.status(200).json({
             ok: true,
-            data: paginatedData
+            data: {items: paginatedData.items},
+            pagination: {
+                page: paginatedData.page,
+                limit: paginatedData.limit,
+                total: paginatedData.total,
+                totalPages: paginatedData.totalPages
+            }
         })
 })
 
@@ -40,8 +48,10 @@ app.post('/events', validateEvent, async (req,res) => {
     })
 })
 
-app.get('/events/saved', async (req, res)=> {
-    res.json(readEvents())
+app.get('/events/saved', validateQuery, async (req, res)=> {
+    const queries = req.query
+    const paginatedData = paginationHelper(queries, readEvents())
+    res.json(paginatedData)
 })
 
 app.use((req, res)=>{
