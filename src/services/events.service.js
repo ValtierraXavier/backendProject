@@ -32,10 +32,12 @@ export const paginationHelper = (query = {}, items = []) => {
     items = orderEvents(items)
     const output = {
         items: items.slice((page - 1) * limit, page * limit),
-        page: page,
-        limit: limit,
-        total: items.length,
-        totalPages: Math.ceil(items.length / limit)
+        pagination:{
+            page: page,
+            limit: limit,
+            total: items.length,
+            totalPages: Math.ceil(items.length / limit)
+        },
     }
     return output
 }

@@ -16,9 +16,6 @@ if(process.env.NODE_ENV !== "test") {
     app.use(rateLimiter())
 }
 
-app.get('/',(req, res)=>{
-    res.send('Hello World')
-})
 app.get('/health',(req, res)=>{
     res.status(200).json({ok:true})
 })
@@ -29,13 +26,8 @@ app.get("/events", validateQuery, async (req, res) => {
     const paginatedData = paginationHelper(queries, filteredData)
         res.status(200).json({
             ok: true,
-            data: {items: paginatedData.items},
-            pagination: {
-                page: paginatedData.page,
-                limit: paginatedData.limit,
-                total: paginatedData.total,
-                totalPages: paginatedData.totalPages
-            }
+            data: paginatedData.items,
+            pagination: paginatedData.pagination
         })
 })
 
@@ -51,7 +43,11 @@ app.post('/events', validateEvent, async (req,res) => {
 app.get('/events/saved', validateQuery, async (req, res)=> {
     const queries = req.query
     const paginatedData = paginationHelper(queries, readEvents())
-    res.json(paginatedData)
+    res.status(200).json({
+        ok: true,
+        data: paginatedData.items,
+        pagination: paginatedData.pagination
+    })
 })
 
 app.use((req, res)=>{
