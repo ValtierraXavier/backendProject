@@ -84,3 +84,20 @@ export const validateQuery = (req, res, next) => {
     }
     next()
 }
+
+export const validateParams = (req, res, next) => {
+    const id = req.params.id
+    if(id === undefined){
+        return next()
+    }
+    if(!idExists){
+        return res.status(404).json({
+            ok: false,
+            error: {
+                code: "RECORD_NOT_FOUND",
+                message: `Record for ID: ${id} does not exist.`
+            }
+        })
+    }
+        
+}

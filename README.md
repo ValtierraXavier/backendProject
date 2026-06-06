@@ -120,9 +120,9 @@ Status - 201 Created
 }
 ```
 
-### GET "/events/saved"
+### GET "/events/:id"
 ---
-Returns a paginated array of all events.
+Returns the event corresponding to the provided id.
 
 #### Success Response
 
@@ -131,13 +131,20 @@ Status - 200 OK
 {
     ok: true,
     data: {
-        items: []
-    },
-    pagination: {
-        page: 1,
-        limit: 10,
-        total: 0,
-        totalPages: 0
+        id: "1A2B3C4D5E",
+        type: "xml",
+        timestamp: "2026-10-10T12:00:00.000Z",
+        payload: {}
     }
 }
+```
+#### Error Response
+```js
+    {
+        ok: false,
+        error: {
+            code: "NOT_FOUND",
+            message: `Event with ID: 1A2B3C4D5E does not exist.`
+        }
+    }
 ```

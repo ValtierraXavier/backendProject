@@ -1,9 +1,10 @@
 import express from 'express'
-import { readEvents, saveEvent } from './storage/memory.store.js'
-import {validateEvent, validateQuery} from './middleware/validate.middleware.js'
+import { saveEvent } from './storage/memory.store.js'
+import { validateEvent, validateQuery } from './middleware/validate.middleware.js'
 import { queryFilter, paginationHelper } from './services/events.service.js';
 import { rateLimiter } from './middleware/ratelimit.middelware.js';
 import { reqLogger } from './middleware/logs.middleware.js';
+import {handleGetEventById} from "./controllers/events.controller.js"
 
 const app = express()
 
@@ -40,15 +41,7 @@ app.post('/events', validateEvent, async (req,res) => {
     })
 })
 
-app.get('/events/saved', validateQuery, async (req, res)=> {
-    const queries = req.query
-    const paginatedData = paginationHelper(queries, readEvents())
-    res.status(200).json({
-        ok: true,
-        data: paginatedData.items,
-        pagination: paginatedData.pagination
-    })
-})
+app.get("/events/:id", handleGetEventById)
 
 app.use((req, res)=>{
     res.status(404).json({

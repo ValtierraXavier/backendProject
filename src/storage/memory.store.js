@@ -10,3 +10,7 @@ export const readEvents = () => {
 export const resetEvents = () => {
     events.length = 0
 }
+
+export const getEventById = (id) => {
+    return events.find(e => e.id === id) || null
+}
