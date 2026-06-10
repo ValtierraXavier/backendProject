@@ -1,10 +1,22 @@
-import { getEventById } from "../storage/memory.store.js";
+import { getEventById, saveEvent } from "../storage/memory.store.js";
+import { paginationHelper, queryFilter } from "../services/events.service.js"
 
-export const handleGetEventById = (req, res) => {
+export const handleGetEvents = async (req, res) => {
+    const queries = req.query
+    const filteredData = queryFilter(queries)
+    const paginatedData = paginationHelper(queries, filteredData)
+        res.status(200).json({
+            ok: true,
+            data: paginatedData.items,
+            pagination: paginatedData.pagination
+        })
+}
+
+export const handleGetEventById = async (req, res) => {
     const id = req.params.id
     const event = getEventById(id)
     if(!event){
-        return res.status(404).json({
+        res.status(404).json({
             ok: false,
             error: {
                 code: "NOT_FOUND",
@@ -12,8 +24,17 @@ export const handleGetEventById = (req, res) => {
             }
         })
     }
-    return  res.status(200).json({
+    res.status(200).json({
             ok: true,
             data: event
-        }) 
+    }) 
+}
+
+export const handlePostEvent = async (req, res) => {
+     const response = req.body
+    const storedEvent = saveEvent(response)
+    res.status(201).json({
+        ok: true,
+        data: storedEvent
+    })
 }

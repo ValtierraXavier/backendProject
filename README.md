@@ -144,7 +144,7 @@ Status - 200 OK
         ok: false,
         error: {
             code: "NOT_FOUND",
-            message: `Event with ID: 1A2B3C4D5E does not exist.`
+            message: `Event with ID: 1A2B3C4D5F does not exist.`
         }
     }
 ```

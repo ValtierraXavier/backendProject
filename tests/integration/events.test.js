@@ -17,7 +17,7 @@ test("tests the health endpoint. expect {ok: true}", async ()=>{
         .expect(200)
     expect(res.body).toEqual({ok: true})
 })
-test("tests a fake endpoint expectiong 404 status.", async()=>{
+test("tests a fake endpoint expectiong 404 status.", async ()=>{
     const res = await request(app)
         .get('/fakeEP/')
         .expect('Content-Type', /json/)
@@ -225,7 +225,7 @@ test("test fakeEvent dataset for type query filtering response.", async () => {
         .get("/events?type=json")
         .expect(200)
     const paginatedFilter = paginationHelper({page: 1, limit: 20},fakeEvents.filter(e=> e.type === "json")).items
-    expect(res.body.data.items.map(e => e.id)).toEqual(paginatedFilter.map(e => e.id))
+    expect(res.body.data.map(e => e.id)).toEqual(paginatedFilter.map(e => e.id))
 })
 
 test("Test /events with a from query. fitering seeded events from fakeEvents.", async () => {
@@ -244,7 +244,7 @@ test("Test /events with a from query. fitering seeded events from fakeEvents.", 
         .get("/events?from=2026-05-03T10:30:00.000Z")
         .expect(200)
     const paginatedFilter = paginationHelper({page: 1, limit: 20},fakeEvents.filter(event => event.timestamp >= "2026-05-03T10:30:00.000Z")).items
-    expect(res.body.data.items.map(e => e.id)).toEqual(paginatedFilter.map(e => e.id))
+    expect(res.body.data.map(e => e.id)).toEqual(paginatedFilter.map(e => e.id))
 })
 
 test("Test /events with a to query. fitering seeded events from fakeEvents.", async () => { 
@@ -261,7 +261,7 @@ test("Test /events with a to query. fitering seeded events from fakeEvents.", as
         .get("/events?to=2026-05-03T10:30:00.000Z")
         .expect(200)
     const paginatedFilter = paginationHelper({page: 1, limit: 20}, fakeEvents.filter(event => event.timestamp <= "2026-05-03T10:30:00.000Z")).items
-    expect(res.body.data.items.map(e => e.id)).toEqual(paginatedFilter.map(e => e.id))
+    expect(res.body.data.map(e => e.id)).toEqual(paginatedFilter.map(e => e.id))
 })
 test("combination queries. from and to.", async () => {
     resetEvents()
@@ -280,7 +280,7 @@ test("combination queries. from and to.", async () => {
         const paginatedFilter = paginationHelper({page: 1, limit: 20}, fakeEvents.filter(
         e => e.timestamp >= "2026-05-02T09:15:00.000Z" && e.timestamp <= "2026-05-06T13:10:00.000Z"
     )).items
-    expect(res.body.data.items.map(e => e.id)).toEqual(paginatedFilter.map(e => e.id)
+    expect(res.body.data.map(e => e.id)).toEqual(paginatedFilter.map(e => e.id)
 )
 })
 
@@ -308,7 +308,7 @@ test("All query combinations.", async () => {
             e.timestamp >= from &&
             e.timestamp <= to
         )).items
-    expect(res.body.data.items.map(e => e.id)).toEqual(paginatedFilter.map(e => e.id))
+    expect(res.body.data.map(e => e.id)).toEqual(paginatedFilter.map(e => e.id))
 })
 
 test("deterministic testing of pagination helper.", async () => {
@@ -326,23 +326,23 @@ test("deterministic testing of pagination helper.", async () => {
     const res1 = await request(app)
         .get("/events?page=1&limit=3")
         .expect(200)
-    expect(res1.body.data.items.map(e => e.id)).toEqual(["evt-010","evt-009","evt-008"])
+    expect(res1.body.data.map(e => e.id)).toEqual(["evt-010","evt-009","evt-008"])
     const res2 = await request(app)
         .get("/events?page=2&limit=3")
         .expect(200)
-    expect(res2.body.data.items.map(e => e.id)).toEqual(["evt-007","evt-006","evt-005"])
+    expect(res2.body.data.map(e => e.id)).toEqual(["evt-007","evt-006","evt-005"])
     const res3 = await request(app)
         .get("/events?page=3&limit=3")
         .expect(200)
-    expect(res3.body.data.items.map(e => e.id)).toEqual(["evt-004","evt-003","evt-002"])
+    expect(res3.body.data.map(e => e.id)).toEqual(["evt-004","evt-003","evt-002"])
     const res4 = await request(app)
         .get("/events?page=4&limit=3")
         .expect(200)
-    expect(res4.body.data.items.map(e => e.id)).toEqual(["evt-001"])
+    expect(res4.body.data.map(e => e.id)).toEqual(["evt-001"])
     const res5 = await request(app)
         .get("/events?page=5&limit=3")
         .expect(200)
-    expect(res5.body.data.items.map(e => e.id)).toEqual([])
+    expect(res5.body.data.map(e => e.id)).toEqual([])
     const res6 = await request(app)
         .get("/events?page=4&limit=-3")
         .expect(400)
